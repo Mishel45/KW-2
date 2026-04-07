@@ -44,5 +44,4 @@ class JavaQuestionControllerTest {
         when(questionService.getAll()).thenReturn(questions);
         assertEquals(questions, out.qetQuestions());
     }
-
 }

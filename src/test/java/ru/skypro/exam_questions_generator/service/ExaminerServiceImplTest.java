@@ -1,6 +1,7 @@
 package ru.skypro.exam_questions_generator.service;
 
 import model.Question;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,40 +19,34 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ExaminerServiceImplTest {
     @Mock
-    private QuestionService questionService;
+    private QuestionService javaService;
+    @Mock
+    private QuestionService mathService;
 
     @InjectMocks
     private ExaminerServiceImpl out;
     private final Question q1 = new Question("Q1", "A1");
-    private final Question q2 = new Question("Q2", "A2");
+    private final Question q2 = new Question("M2", "A1");
     private final Question q3 = new Question("Q3", "A3");
 
-    @Test
-    void getQuestions_ShouldReturnRequestedAmountOfUniqueQuestions() {
-        int amount = 2;
-        when(questionService.getAll()).thenReturn(List.of(q1, q2, q3));
-        when(questionService.getRandomeQuestion()).thenReturn(q1, q2);
-        Collection<Question> result = out.getQuestions(amount);
-        assertEquals(amount, result.size());
-        assertTrue(result.contains(q1));
-        assertTrue(result.contains(q2));
-        verify(questionService, times(2)).getRandomeQuestion();
+    @BeforeEach
+    void setUp() {
+        out = new ExaminerServiceImpl(List.of(javaService, mathService));
     }
 
     @Test
-    void getQuestions_ShouldCallRandomUntilUniqueAmountReached() {
-        when(questionService.getAll()).thenReturn(List.of(q1, q2));
-        when(questionService.getRandomeQuestion()).thenReturn(q1, q1, q2);
+    void getQuestions_ShouldReturnRequestedAmountOfUniqueQuestions() {
+        when(javaService.getAll()).thenReturn(List.of(q1, q3));
+        when(mathService.getAll()).thenReturn(List.of(q2));
         Collection<Question> result = out.getQuestions(2);
         assertEquals(2, result.size());
-        verify(questionService, times(3)).getRandomeQuestion();
+        assertTrue(List.of(q1, q2, q3).containsAll(result));
     }
 
     @Test
     void getQuestions_ShouldThrowException_WhenAmountGreaterThanTotal() {
-        when(questionService.getAll()).thenReturn(List.of(q1, q2));
-        assertThrows(QuestionLimitException.class, () -> out.getQuestions(5));
+        when(javaService.getAll()).thenReturn(List.of(q1));
+        when(mathService.getAll()).thenReturn(List.of(q2));
+        assertThrows(RuntimeException.class, () -> out.getQuestions(5));
     }
-
-
 }

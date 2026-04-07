@@ -3,30 +3,43 @@ package ru.skypro.exam_questions_generator.service;
 import model.Question;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import ru.skypro.exam_questions_generator.repository.QuestionRepository;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class JavaQuestionServiceTest {
+    @Mock
+    private QuestionRepository repositoryMock;
     private JavaQuestionService out;
 
     @BeforeEach
     void setUp() {
-        out = new JavaQuestionService();
+        out = new JavaQuestionService(repositoryMock);
     }
 
     @Test
     void add_WithParameters_ShouldAddAndReturnQuestion() {
-        Question result = out.add("Java", "Language");
-        assertEquals(new Question("Java", "Language"), result);
-        assertEquals(1, out.getAll().size());
-        assertTrue(out.getAll().contains(result));
+        String qText = "Question";
+        String aText = "Answer";
+        Question expectedQuestion = new Question(qText, aText);
+        when(repositoryMock.add(any(Question.class))).thenReturn(expectedQuestion);
+        Question actualQuestion = out.add(qText, aText);
+        assertEquals(expectedQuestion, actualQuestion);
+        verify(repositoryMock, times(1)).add(any(Question.class));
     }
 
     @Test
-    void add_Duplicate_ShouldNotAddSameQuestionTwice() {
-        out.add("Java", "Language");
-        out.add("Java", "Language");
-        assertEquals(1, out.getAll().size()); // Set не даст добавить дубликат
+    void add_ShouldCallRepository() {
+        Question q = new Question("Q1", "A1");
+        out.add(q);
+        verify(repositoryMock, times(1)).add(q);
     }
 
     @Test
@@ -40,11 +53,10 @@ class JavaQuestionServiceTest {
 
     @Test
     void getRandomQuestion_ShouldReturnQuestionFromList() {
-        out.add("Q1", "A1");
-        out.add("Q2", "A2");
+        Question testQuestion = new Question("Q1", "A1");
+        when(repositoryMock.getAll()).thenReturn(Set.of(testQuestion));
         Question result = out.getRandomeQuestion();
-        assertNotNull(result);
-        assertTrue(out.getAll().contains(result));
+        assertEquals(testQuestion, result);
     }
 
     @Test
