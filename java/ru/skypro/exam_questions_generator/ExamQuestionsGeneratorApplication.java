@@ -9,5 +9,4 @@ public class ExamQuestionsGeneratorApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ExamQuestionsGeneratorApplication.class, args);
 	}
-
 }

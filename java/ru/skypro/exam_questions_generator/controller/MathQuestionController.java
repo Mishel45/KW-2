@@ -11,11 +11,11 @@ import ru.skypro.exam_questions_generator.service.QuestionService;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/exam/java")
-public class JavaQuestionController {
+@RequestMapping("/exam/math")
+public class MathQuestionController {
     private final QuestionService service;
 
-    public JavaQuestionController(@Qualifier("javaQuestionService") QuestionService service) {
+    public MathQuestionController(@Qualifier("mathQuestionService") QuestionService service) {
         this.service = service;
     }
 
@@ -30,7 +30,8 @@ public class JavaQuestionController {
     }
 
     @GetMapping
-    public Collection<Question> qetQuestions() {
+    public Collection<Question> getQuestions() {
         return service.getAll();
     }
+
 }

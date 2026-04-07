@@ -7,45 +7,40 @@ import ru.skypro.exam_questions_generator.repository.QuestionRepository;
 
 import java.util.*;
 
-
 @Service
-public class JavaQuestionService implements QuestionService {
+public class MathQuestionService implements QuestionService{
     private final QuestionRepository repository;
     private final Random random = new Random();
-
-    public JavaQuestionService(@Qualifier("javaQuestionRepository") QuestionRepository repository) {
+    public MathQuestionService(@Qualifier("mathQuestionRepository") QuestionRepository repository) {
         this.repository = repository;
     }
 
     @Override
     public Question add(String question, String answer) {
-        Question newQuestion = new Question(question, answer);
-        repository.add(newQuestion);
-        return newQuestion;
+        return repository.add(new Question(question, answer));
     }
 
     @Override
     public Question add(Question question) {
-        repository.add(question);
-        return question;
+        return repository.add(question);
     }
 
     @Override
     public Question remove(Question question) {
-        repository.remove(question);
-        return question;
+        return repository.remove(question);
     }
 
     @Override
     public Collection<Question> getAll() {
-        return Collections.unmodifiableCollection(repository.getAll());
+        return repository.getAll();
     }
 
     @Override
     public Question getRandomeQuestion() {
         if (repository.getAll().isEmpty()) {
-            throw new RuntimeException("Список вопросов пуст");
+            throw new RuntimeException("Список математических вопросов пуст");
         }
+
         List<Question> questionList = new ArrayList<>(repository.getAll());
         int index = random.nextInt(questionList.size());
         return questionList.get(index);
